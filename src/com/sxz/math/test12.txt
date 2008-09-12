@@ -1,0 +1,7 @@
+#Test file
+#x in the first column y in the second
+1 0 
+2 1
+3 0
+4 1
+5 0 

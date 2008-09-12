@@ -1,0 +1,8 @@
+#Test file
+#x in the first column y in the second
+0 255
+1 255
+2 255
+3 255 
+4 255
+5 0

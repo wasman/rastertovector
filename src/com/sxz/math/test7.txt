@@ -1,0 +1,12 @@
+#Test file
+#x in the first column y in the second
+0 0
+1 0
+2 5
+3 8
+4 26
+5 35
+6 50
+7 63
+8 82
+9 99
