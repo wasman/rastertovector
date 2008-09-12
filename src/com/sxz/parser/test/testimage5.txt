@@ -1,0 +1,2 @@
+url:images/testimage5.png
+threshold:33

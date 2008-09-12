@@ -1,0 +1,2 @@
+url:images/testimage4.gif
+threshold:20
