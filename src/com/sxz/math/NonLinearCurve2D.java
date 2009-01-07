@@ -212,7 +212,7 @@ public final class NonLinearCurve2D {
 			reduceError.control = control;
 			reduceError.error = error;
 			reduceError.errorIndex = worstIndex;
-
+			reduceError.errorPoint = errorPoint;
 
 			oldReduceError = reduceError;
 
@@ -732,5 +732,88 @@ public final class NonLinearCurve2D {
 		return getStartPoint() + " " + getControlPoint() + " " + getEndPoint();
 	}
 
+	//pick the next point along the curve
+	public ReduceError predict(ReduceError original) {
+		if (original == null) {
+			return null;
+		}
+		if (samples.size() < 2) {
+			return null;
+		}
+		//First find next forward point
+		final Point2D end = getEndPoint();
+		if (end == null) {
+			System.err.println("No end point in predict!");
+			return null;
+		}
+		final Double x = (Double)samples.lowerKey(end.getX());
+		final Double y = (Double)samples.get(x);
+		final Point2D d = new Point2D.Double(x.doubleValue(), y.doubleValue());
+		if (d == null) {
+			System.err.println("No d point in predict!");
+			return null;
+		}
+		final double moveX = end.getX() - d.getX();
+		final Line2D line1 = new Line2D.Double(d, end);
+		final Point2D top = new Point2D.Double(end.getX() + moveX, Double.MAX_VALUE);
+		final Point2D bottom = new Point2D.Double(end.getX() + moveX, 
+				Double.MAX_VALUE - 1);
 
+		final Line2D line2 = new Line2D.Double(top, bottom);
+
+		Point2D intersection = Util.getIntersectionOfRays(line1, line2);
+		//System.out.println("Looking for intersection " + intersection);
+		if (intersection == null) {
+			//something has gone very wrong
+			System.err.println("Failed to find the intersection");
+			return null;
+		}
+		add(intersection);
+		ReduceError oldError = null;
+		int i = 0;
+		while (true) {
+			//Next calculate the error
+			final ReduceError reduceError = getReduceError();
+			if (reduceError == null) {
+				//System.err.println("Failed to find reduceError");
+				return null;
+			}
+
+			if (reduceError.error <= original.error) {
+				//System.out.println("new reduceError settled with " + reduceError.error);
+				return reduceError;
+			}
+
+			if (reduceError.error < Util.LIMIT || i > ITERATIONS) {
+				return reduceError;
+			}
+			//the 1.1 serves to reduce the noise
+			if (oldError != null && reduceError.error > (oldError.error * 1.1)) {
+				//System.out.println("new reduceError is too much with " + reduceError.error);
+				return oldError;
+			}
+
+			oldError = reduceError;
+			//System.out.println("have error of " + oldError.error);
+			final ErrorPoint errorPoint = oldError.errorPoint;
+			//adjust the forward point in the inverse of the error until the
+			//next error is no better than the last or the error is zero
+			final Point2D point = errorPoint.point;
+			double moveY = 0.0;
+			//System.out.println("have point " + point);
+			//System.out.println("and original control " + original.control);
+			if (original.control.getY() > point.getY()) {
+				moveY = oldError.error * ERROR_DIVISOR * -1;
+			} else {
+				moveY = oldError.error * ERROR_DIVISOR;
+			}
+
+			intersection = new Point2D.Double(intersection.getX(), intersection.getY() + moveY);
+			add(intersection);
+			//System.out.println("changing end point to " + intersection);
+			i++;
+		}
+		//System.out.println("Something has gone horribly wrong I think");	
+		//return null;
+	}
 }

@@ -24,6 +24,7 @@ public final class ReduceError {
 	public Point2D start;
 	public Point2D control;
 	public Point2D end;
+	public ErrorPoint errorPoint;
 
 	ReduceError() {
 		super();
