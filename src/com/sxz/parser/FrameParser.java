@@ -177,11 +177,6 @@ public final class FrameParser {
 			alreadyChecked.clear();
 			//this is the new region we are currently working with
 			Location seed = locationPool.getRandomLocation();
-            /*
-            if (region != null) {
-                System.out.println("region had size " + region.size());
-            }
-            */
 
 			region = new Region(seed);
 			//System.out.println("initial seed for new region is " + seed);
