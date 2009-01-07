@@ -73,6 +73,7 @@ public final class TestCurveGUI {
 	static class Drawable extends JComponent {
 		private MouseListener listener = null;
 		private NonLinearCurve2D curve = null;
+
 		Drawable() {
 			super();
 			setDoubleBuffered(true);
@@ -105,7 +106,6 @@ public final class TestCurveGUI {
 			Graphics2D g2d = (Graphics2D)g;
 			g2d.setPaint(java.awt.Color.white);
 
-			// Draw an oval that fills the window
 			int x = 0;
 			int y = 0;
 			int width = getSize().width - 1;
@@ -121,7 +121,7 @@ public final class TestCurveGUI {
 				g2d.drawRect((int)Math.round(sample.getX()) - 2, (int)Math.round(sample.getAverage()) - 2, 5, 5);
 			}
 			if (curve != null) {
-				g2d.setPaint(java.awt.Color.red);
+				g2d.setPaint(java.awt.Color.blue);
 				final ReduceError reduceError = curve.getReduceError();
 				System.out.println("error is " + reduceError.error);
 				final QuadCurve2D quadCurve = curve.getQuadCurve2D(reduceError);
@@ -131,8 +131,21 @@ public final class TestCurveGUI {
 				g2d.fillRect((int)Math.round(start.getX() - 2), (int)Math.round(start.getY()) - 2, 5, 5);
 				final Point2D end = reduceError.end;
 				g2d.fillRect((int)Math.round(end.getX() - 2), (int)Math.round(end.getY()) - 2, 5, 5);
+				g2d.setPaint(java.awt.Color.red);
 				final Point2D control = reduceError.control;
 				g2d.fillRect((int)Math.round(control.getX()) - 2, (int)Math.round(control.getY()) - 2, 5, 5);
+				/*
+				ReduceError newError = curve.predict(reduceError);
+				if (newError != null) {
+					System.out.println("have predicted error of " + newError.error);
+					final QuadCurve2D newQuadCurve = curve.getQuadCurve2D(newError);
+					g2d.setPaint(java.awt.Color.red);
+					g2d.setStroke (new BasicStroke(1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1f, new float[] {12f, 12f}, 0f));
+
+					g2d.draw(newQuadCurve);
+				}
+				*/
+
 				/*
 				g2d.setPaint(java.awt.Color.blue);
 				final ArrayList lines = curve.getLines(quadCurve);
@@ -150,6 +163,7 @@ public final class TestCurveGUI {
 	static class MouseListener extends MouseAdapter {
 		private SampleContainer sampler = new SampleContainer();
 		private Drawable drawable = null;
+
 		MouseListener(Drawable drawable) {
 			super();
 			this.drawable = drawable;
